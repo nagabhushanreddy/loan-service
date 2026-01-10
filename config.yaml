@@ -1,0 +1,79 @@
+application:
+  name: loan-service
+  version: 1.0.0
+  description: Multi-Finance Loan Service API
+  
+security:
+  jwt:
+    algorithm: HS256
+    
+workflow:
+  sla_thresholds:
+    intake_review: 24  # hours
+    risk_review: 48
+    credit_assessment: 48
+    maker_review: 24
+    checker_review: 24
+    
+  allowed_transitions:
+    customer:
+      - draft -> submitted
+    loan_officer:
+      - submitted -> intake_review
+      - intake_review -> risk_review
+    risk_officer:
+      - risk_review -> credit_assessment
+    credit_assessment_officer:
+      - credit_assessment -> maker_review
+    maker:
+      - maker_review -> checker_review
+    checker:
+      - checker_review -> decision_pending
+      - decision_pending -> approved
+      - decision_pending -> rejected
+      - decision_pending -> conditional
+    disbursement_officer:
+      - conditional -> ready_for_disbursement
+      - ready_for_disbursement -> disbursement_confirmed
+
+loan_products:
+  two_wheeler:
+    min_amount: 20000
+    max_amount: 150000
+    min_tenure: 6
+    max_tenure: 36
+    interest_rate_min: 10.5
+    interest_rate_max: 18.0
+    max_ltv: 90
+    
+  four_wheeler:
+    min_amount: 100000
+    max_amount: 2000000
+    min_tenure: 12
+    max_tenure: 84
+    interest_rate_min: 8.5
+    interest_rate_max: 15.0
+    max_ltv: 85
+    
+  personal_loan:
+    min_amount: 50000
+    max_amount: 500000
+    min_tenure: 12
+    max_tenure: 60
+    interest_rate_min: 11.0
+    interest_rate_max: 24.0
+    max_ltv: 0
+    
+  vehicle_loan:
+    min_amount: 50000
+    max_amount: 5000000
+    min_tenure: 12
+    max_tenure: 84
+    interest_rate_min: 8.0
+    interest_rate_max: 14.0
+    max_ltv: 80
+
+eligibility:
+  min_credit_score: 650
+  max_debt_to_income_ratio: 0.5
+  min_monthly_income: 15000
