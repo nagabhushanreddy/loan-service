@@ -1,4 +1,6 @@
 """Main FastAPI application"""
+import os
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -13,17 +15,22 @@ from app.middleware import (
 )
 from app.routes import health, products, eligibility, applications, workflow, documents
 from app.services.idempotency import idempotency_service
+from utils import logger
+
+
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events"""
-    # Startup
-    print("Starting Loan Service...")
+    # Startup: Initialize utils-service configuration and logging
+    logger.info("Starting Loan Service...")
+    logger.info(f"Service: {settings.app_name}")
+    logger.info(f"Environment: {settings.environment}")
     await idempotency_service.connect()
     yield
     # Shutdown
-    print("Shutting down Loan Service...")
+    logger.info("Shutting down Loan Service...")
     await idempotency_service.disconnect()
 
 
